@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload and Labeling</title>
+</head>
+<body>
+    <h1>Image Upload and Labeling</h1>
+    <form id="image-form" enctype="multipart/form-data">
+        <input type="file" id="image-input" accept="image/png, image/jpeg" required>
+        <input type="text" id="label-input" placeholder="Enter label(s) (comma-separated)">
+        <button type="submit">Upload</button>
+    </form>
+    <h2>Search for Photos</h2>
+    <form id="search-form">
+        <input type="text" id="search-keyword" placeholder="Enter search keywords">
+        <button type="submit">Search</button>
+    </form>
+    <div id="search-results">
+        <!-- Display search results here -->
+        <!-- whatever LF2 outputs-->
+    </div>
+    <img id="uploaded-image" src="" alt="Uploaded Image">
+    
+    
+    <script>
+        var sdk = apigClientFactory.newClient({});
+      </script>
+    <!--event listener-->
+    <script src = "request.js"></script>
+</body>
+</html>
