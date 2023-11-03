@@ -1,5 +1,23 @@
 <!DOCTYPE html>
 <html>
+<!-- api gateway generated sdk -->
+<script src="./assets/js/sdk/lib/axios/dist/axios.standalone.js"></script>
+<script src="./assets/js/sdk/lib/CryptoJS/rollups/hmac-sha256.js"></script>
+<script src="./assets/js/sdk/lib/CryptoJS/rollups/sha256.js"></script>
+<script src="./assets/js/sdk/lib/CryptoJS/components/hmac.js"></script>
+<script src="./assets/js/sdk/lib/CryptoJS/components/enc-base64.js"></script>
+<script src="./assets/js/sdk/lib/url-template/url-template.js"></script>
+<script src="./assets/js/sdk/lib/apiGatewayCore/sigV4Client.js"></script>
+<script src="./assets/js/sdk/lib/apiGatewayCore/apiGatewayClient.js"></script>
+<script src="./assets/js/sdk/lib/apiGatewayCore/simpleHttpClient.js"></script>
+<script src="./assets/js/sdk/lib/apiGatewayCore/utils.js"></script>
+
+<script src="./assets/js/sdk/apigClient.js"></script>
+
+<script src="./assets/js/aws-sdk.min.js"></script>
+
+
+
 <head>
     <title>Image Upload and Labeling</title>
 </head>
@@ -20,12 +38,9 @@
         <!-- whatever LF2 outputs-->
     </div>
     <img id="uploaded-image" src="" alt="Uploaded Image">
-    
-    
-    <script>
-        var sdk = apigClientFactory.newClient({});
-      </script>
+
+    <script>var sdk = apigClientFactory.newClient({});</script>
     <!--event listener-->
-    <script src = "request.js"></script>
+    <script src = "./assets/js/request.js"></script>
 </body>
 </html>
