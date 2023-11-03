@@ -1,16 +1,23 @@
-function callPutPhotoApi(filename,labels) {
+function callPutPhotoApi(file,filename,labels) {
     // filename, labels, file?
-    return sdk.Post({},{})
-    /*return sdk.chatbotPost({}, {
-      messages: [{
-        type: 'unstructured',
-        unstructured: {
-          text: message
-        }
-      }]
-    }, {});*/
+    var other_headers = {
+      headers:{
+        'filename': filename,
+        'x-amz-meta-customLabels': labels
+      }
+    };
+    return sdk.upload.post({},file,other_headers)
+    .then(function (result) {
+      // Handle the successful response
+      console.log("API response:", result);
+      return result;
+  })
+  .catch(function (error) {
+      // Handle errors
+      console.error("API error:", error);
+      throw error; // Propagate the error for further handling if needed
+  });
   }
-
 /////////event-stuff///////////
 document.addEventListener('DOMContentLoaded', function () {
     const imageForm = document.getElementById('image-form');
@@ -26,11 +33,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const labelInput = document.getElementById('label-input');
 
         const formData = new FormData(imageForm);
-
+        console.log(labelInput.value);
         // You can send the form data to the server for processing here
         // For now, we'll just display the selected image
         const selectedImage = imageInput.files[0];
+        console.log(selectedImage);
+        console.log(selectedImage.name);
+        var filename = selectedImage.name;
         uploadedImage.src = URL.createObjectURL(selectedImage);
+        callPutPhotoApi(selectedImage,filename,labelInput.value);
+        
     });
 
     // Handle search form submission
