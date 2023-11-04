@@ -1,12 +1,23 @@
 function callPutPhotoApi(file,filename,labels) {
     // filename, labels, file?
-    var other_headers = {
-      headers:{
-        'filename': filename,
-        'x-amz-meta-customLabels': labels
-      }
+    //file-> currently encoded base64
+    var params = {
+        'bucket': "my-photo-bucket-cc-bd",
+        'object': filename,
+        'x-amz-meta-customLabels': labels,
+        'Content-Type': 'text/base64'
+
     };
-    return sdk.upload.post({},file,other_headers)
+    var body = {"body":file}
+    /*- in method reques add Content-Type: text/base64;
+     custom label too
+     file co
+    integration request
+     add stuff from headers 
+     need to encode file into base64 via some built in javascript 
+    */
+   // first param: params, second body, third-> other
+    return sdk.uploadBucketObjectPut(params,body,{})
     .then(function (result) {
       // Handle the successful response
       console.log("API response:", result);
@@ -37,12 +48,16 @@ document.addEventListener('DOMContentLoaded', function () {
         // You can send the form data to the server for processing here
         // For now, we'll just display the selected image
         const selectedImage = imageInput.files[0];
+        ///////////////////////////////////
+        const binaryData =selectedImage ;//e.target.result;
+        const base64String = btoa(binaryData);
+        console.log('Base64 String:', base64String);
+        ///////////////////////////////////
         console.log(selectedImage);
         console.log(selectedImage.name);
         var filename = selectedImage.name;
         uploadedImage.src = URL.createObjectURL(selectedImage);
-        callPutPhotoApi(selectedImage,filename,labelInput.value);
-        
+        callPutPhotoApi(base64String,filename,labelInput.value);
     });
 
     // Handle search form submission
