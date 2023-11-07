@@ -31,7 +31,7 @@ function callPutPhotoApi(file,filename,labels) {
   }
 
   function callSearchPhotosApi(q) {
-  //// have nto implemented yet!
+  //// have not implemented yet!
     return sdk.searchGet({},{},{})
     .then(function (result) {
       // Handle the successful response
@@ -61,31 +61,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData(imageForm);
         console.log(labelInput.value);
         const selectedImage = imageInput.files[0];
-        ///////////////////////////////////
-        /*const binaryData =event.target.result;//selectedImage ;//e.target.result;
-        const base64String = btoa(binaryData);
-        console.log('Base64 String:', base64String);*/
-       // const binaryData = reader.result.split(',')[1];
-       //base64String = btoa(binaryData);
-        //base64String = btoa(selectedImage);
-        //console.log('Base64 String:', base64String);
-        //var filename = selectedImage.name;
-        //uploadedImage.src = URL.createObjectURL(selectedImage);
-        //callPutPhotoApi(base64String,filename,labelInput.value);
         var reader = new FileReader();
         reader.onload = function() {
+            //console.log("reader.result: "+reader.result)
             base64String = btoa(reader.result);
             var filename = selectedImage.name;
             uploadedImage.src = URL.createObjectURL(selectedImage);
-            console.log("hello: "+base64String)
+            //console.log("hello: "+base64String)
             callPutPhotoApi(base64String,filename,labelInput.value);
         };
         reader.readAsBinaryString(selectedImage);
-        //reader.readAsDataURL(selectedImage);
-        /// also returns base64 str
-        ///////////////////////////////////
-        //console.log(selectedImage);
-        //console.log(selectedImage.name);
     });
 
     // Handle search form submission
