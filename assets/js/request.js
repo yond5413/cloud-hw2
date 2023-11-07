@@ -45,20 +45,6 @@ function callPutPhotoApi(file,filename,labels) {
   });
   }
 ///////////////////////////////
-const convertBase64 = (file) => {
-  return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-
-      fileReader.onload = () => {
-          resolve(fileReader.result);
-      };
-
-      fileReader.onerror = (error) => {
-          reject(error);
-      };
-  });
-};
 /////////event-stuff///////////
 document.addEventListener('DOMContentLoaded', function () {
     const imageForm = document.getElementById('image-form');
