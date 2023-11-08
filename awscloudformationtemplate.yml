@@ -1,6 +1,11 @@
 #AWSTemplateFormatVersion: '2010-09-09'
 #Idk if it is important
 Description: Assign2 cc-bd
+Parameters:
+ AvailabilityZoneA:
+    Type: String
+    Description: First AvailabilityZone
+    Default: us-east-1
 Resources:
 ##### idk yet
 ###### put bucket
