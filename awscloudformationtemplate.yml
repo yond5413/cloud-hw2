@@ -1,0 +1,33 @@
+#AWSTemplateFormatVersion: '2010-09-09'
+#Idk if it is important
+Description: Assign2 cc-bd
+Resources:
+##### idk yet
+###### put bucket
+  AssetsBucket:
+      Type: AWS::S3::Bucket
+      ## create
+  ####frontend bucket
+  ClientBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      OwnershipControls:
+        Rules:
+        - ObjectOwnership: BucketOwnerPreferred
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+
+
+### create initial buckets for frontend 
+### then make gateway to do initila puts?
+### think we have to connect code pipeline
+### cloudformation template?
+## 2 pipelines
+# P1-> lambdas 
+# P2-> frontend code
