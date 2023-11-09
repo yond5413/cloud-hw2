@@ -8,18 +8,11 @@ phases:
       - echo "none tbh"
   build:
     commands:
-      - echo "Zipping deployment package..."
-      ### need to do for both lambdas
-      zip -r9 deployment_index.zip lambdas/index-photos  
-      zip -r9 deployment_search.zip lambdas/search-photos
-      #- cd lambdas
-      #- zip -r9 ../deployment_package.zip .
-      #- cd ..
-      #- zip -g deployment_package.zip lambda_function.py
+      - echo "Zipping deployment packages for lambdas..."
+      - zip -r9 deployment_index.zip lambdas/index-photos
+      - zip -r9 deployment_search.zip lambdas/search-photos
   post_build:
     commands:
-      - echo "Updating lambda Function..."
-      #- aws lambda update-function-code --function-name github-to-lambda-demo --zip-file fileb://deployment_package.zip
+      - echo "Updating Lambda Functions..."
       - aws lambda update-function-code --function-name index-photos --zip-file fileb://deployment_index.zip
       - aws lambda update-function-code --function-name search-photos --zip-file fileb://deployment_search.zip
-      - echo "DONE!!"
