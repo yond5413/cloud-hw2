@@ -11,6 +11,7 @@ phases:
       - echo "Zipping deployment packages for lambdas..."\
       - cd lambdas/index-photos
       - zip -r9 deployment_index.zip * #lambdas/index-photos/*
+      - cd 
       - cd lambdas/search-photos
       - zip -r9 deployment_search.zip * #lambdas/search-photos/*
   post_build:
