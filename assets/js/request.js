@@ -31,6 +31,12 @@ function callPutPhotoApi(file,filename,labels) {
   }
 
   function callSearchPhotosApi(q) {
+    /* {q:q,
+    "x-api-key":"my_api_key"}
+        only one enabled
+        -create api key
+        - usage plan etc
+    */
   //// have not implemented yet!
     return sdk.searchGet({},{},{})
     .then(function (result) {

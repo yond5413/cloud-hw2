@@ -1,0 +1,10 @@
+version: 0.2
+
+artifacts:
+  files: deployment_package.zip
+
+phases:
+  build:
+    commands:
+      - echo "Zipping deployment packages..."
+      - zip -r deployment_package.zip src/index.html src/assets/*
