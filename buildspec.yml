@@ -19,7 +19,7 @@ phases:
       #- ls
       - cd lambdas/search-photos
       - zip -r9 deployment_search.zip * #lambdas/search-photos/*
-      - echo "update index-photos"
+      - echo "update search-photos"
   #post_build:
   #  commands:
       #- echo "Updating Lambda Functions..."
