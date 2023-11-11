@@ -19,6 +19,7 @@ phases:
       #- ls
       - cd lambdas/search-photos
       - zip -r9 deployment_search.zip * #lambdas/search-photos/*
+      - aws lambda update-function-code --function-name search-photos --zip-file fileb://deployment_search.zip
       - echo "update search-photos"
   #post_build:
   #  commands:
