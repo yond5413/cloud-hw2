@@ -13,14 +13,13 @@ phases:
       - cd lambdas/index-photos
       - zip -r9 deployment_index.zip * #lambdas/index-photos/*
       - aws lambda update-function-code --function-name index-photos --zip-file fileb://deployment_index.zip
-      - echo "update index-photos"
-      
+      - echo "updated index-photos"
       - cd ../..
       #- ls
       - cd lambdas/search-photos
       - zip -r9 deployment_search.zip * #lambdas/search-photos/*
       - aws lambda update-function-code --function-name search-photos --zip-file fileb://deployment_search.zip
-      - echo "update search-photos"
+      - echo "updated search-photos"
   #post_build:
   #  commands:
       #- echo "Updating Lambda Functions..."
