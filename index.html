@@ -27,6 +27,8 @@
     <h2>Search for Photos</h2>
     <form id="search-form">
         <input type="text" id="search-keyword" placeholder="Enter search keywords">
+        <button onclick="recordAudio()">Start Recording</button>
+        <div id="output"></div>
         <button type="submit">Search</button>
     </form>
     <div id="search-results">
@@ -39,5 +41,26 @@
    
     <!--event listener-->
     <script src = "./assets/js/request.js"></script>
+
+    <script>
+        var output = document.getElementById('output');
+        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
+        var recognition = new SpeechRecognition();
+
+        // This runs when the speech recognition service has finished
+        recognition.onresult = function(event) {
+          var transcript = event.results[0][0].transcript;
+          output.innerHTML = '<p>Transcript: ' + transcript + '</p>';
+          
+          // Call your AWS API Gateway Triggered Lambda function here
+          // using transcript as the input
+
+        }
+
+        function recordAudio() {
+          recognition.start();
+        }
+    </script>
+
 </body>
 </html>
