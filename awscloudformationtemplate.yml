@@ -27,12 +27,209 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: index.html
+  #######################################      
+  OpenSearchPhotos:
+    Type: 'AWS::OpenSearchService::Domain'
+    Properties:
+      DomainName: "photos-template"
+      #ElasticsearchVersion: OpenSearch_2.9 #"OpenSearch_2.9"
+      EngineVersion: OpenSearch_2.9
+      ClusterConfig:
+       # InstanceType: r6g.xlarge.search
+        DedicatedMasterEnabled: 
+        InstanceType: t3.small.search
+        InstanceCount: 1
+        DedicatedMasterEnabled: false
+        ZoneAwarenessEnabled: false
+        #WarmEnabled: false
+        #ColdStorageOptions: 
+        #  Enabled: false
+      EBSOptions: 
+        EBSEnabled: true
+        VolumeType: gp3
+        VolumeSize: 10
+        Iops: 3000
+        Throughput: 125
+      AccessPolicies: #|
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: es.amazonaws.com
+            Action: es:ESHttpGet
+            Resource: arn:aws:es:us-east-1:239946977323:domain/photos-template/*
 
+  Lambda1IndexTemplateRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: IndexTemplate
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecutionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
+        - PolicyName: AWSLambdaBasicExecutionRole-769498ce-487a-4e22-99d9-a0aa64f10498
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:*
+                Resource: '*'
+        - PolicyName: AmazonS3FullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:*
+                Resource: '*'
+        - PolicyName: AmazonRekognitionCustomLabelsFullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: rekognition:*
+                Resource: '*'
+        - PolicyName: AmazonOpenSearchServiceFullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: es:*
+                Resource: '*'
 
-### create initial buckets for frontend 
-### then make gateway to do initila puts?
-### think we have to connect code pipeline
-### cloudformation template?
-## 2 pipelines
-# P1-> lambdas 
-# P2-> frontend code
+  #########################################################################################
+  #### need to add event trigger 
+  Lambda1Indexphotos:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Handler: index.handler
+      Role: !GetAtt Lambda1IndexTemplateRole.Arn
+      FunctionName: index_photos_template
+      Runtime: python3.11
+      MemorySize: 128
+      Timeout: 123
+      Code:
+        S3Bucket: my-assign2-codebucket
+        S3Key: deploy-index-template.zip
+  ###########################################################################################
+  Lambda2SearchTemplateRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: SearchTemplate
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecutionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
+        - PolicyName: AWSLambdaBasicExecutionRole-769498ce-487a-4e22-99d9-a0aa64f10498
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:*
+                Resource: '*'
+        - PolicyName: AmazonOpenSearchServiceFullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: es:*
+                Resource: '*'
+        - PolicyName: AmazonS3FullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:*
+                Resource: '*'
+        - PolicyName: AmazonLexFullAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: lex:*
+                Resource: '*'
+  ############################################################################################
+  Lambda2Searchphotos:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Handler: index.handler
+      Role: !GetAtt Lambda2SearchTemplateRole.Arn
+      FunctionName: search_photos_template
+      Runtime: python3.11
+      MemorySize: 128
+      Timeout: 123
+      Code:
+        S3Bucket: my-assign2-codebucket
+        S3Key: deploy-search-template.zip
+  ############################################################################################
+  APIrole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: Assign2GatewayTemplateRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ApiGatewayExecutionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
+        - PolicyName: AmazonS3FullAccess 
+          PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - 's3:*'
+                    - 's3-object-lambda:*'
+                  Resource: '*'
+  ############################################################################################
+  PhotoAPI:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Name: Assign2API
+      BodyS3Location:
+        Bucket: my-assign2-codebucket
+        Key: AI Photo Search-First-Stage-swagger-apigateway.yaml
+      Policy:
+        - !Sub arn:aws:iam::${AWS::AccountId}:role/${ApiGatewayRole}
+          ApiGatewayRole: Assign2GatewayTemplateRole
