@@ -37,8 +37,11 @@ function callPutPhotoApi(file,filename,labels) {
         -create api key
         - usage plan etc
     */
-  //// have not implemented yet!
-    return sdk.searchGet({},{},{})
+  param =   {"q":q//,
+        //"x-api-key": "6ZV29UtNMR2QaMqEOpzZp3j1vQVQlaIe5tsIhC1K"
+    };
+    //return sdk.searchGet({'q':q},{},{})
+    return sdk.searchGet(param,{},{})
     .then(function (result) {
       // Handle the successful response
       console.log("API response:", result);
@@ -76,6 +79,8 @@ document.addEventListener('DOMContentLoaded', function () {
             //console.log("hello: "+base64String)
             callPutPhotoApi(base64String,filename,labelInput.value);
         };
+        resp = callSearchPhotosApi('food');
+        console.log(resp);
         reader.readAsBinaryString(selectedImage);
     });
 

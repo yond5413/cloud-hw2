@@ -177,6 +177,8 @@ Resources:
               - Effect: Allow
                 Action: lex:*
                 Resource: '*'
+  #### resource based policy
+  ######:(
   ############################################################################################
   Lambda2Searchphotos:
     Type: 'AWS::Lambda::Function'
@@ -191,7 +193,7 @@ Resources:
         S3Bucket: my-assign2-codebucket
         S3Key: deploy-search-template.zip
   ############################################################################################
-  APIrole:
+  ApiTemplateRole:
     Type: 'AWS::IAM::Role'
     Properties:
       RoleName: Assign2GatewayTemplateRole
@@ -223,13 +225,25 @@ Resources:
                     - 's3-object-lambda:*'
                   Resource: '*'
   ############################################################################################
-  PhotoAPI:
+  PhotoApi:
     Type: 'AWS::ApiGateway::RestApi'
     Properties:
       Name: Assign2API
       BodyS3Location:
         Bucket: my-assign2-codebucket
         Key: AI Photo Search-First-Stage-swagger-apigateway.yaml
-      Policy:
-        - !Sub arn:aws:iam::${AWS::AccountId}:role/${ApiGatewayRole}
-          ApiGatewayRole: Assign2GatewayTemplateRole
+  ############################################################################################
+  Outputs:
+  WebsiteURL:
+    Value: !GetAtt
+      - ClientBucket
+      - WebsiteURL
+    Description: URL for website hosted on S3
+  S3BucketSecureURL:
+    Value: !Join
+      - ''
+      - - 'https://'
+        - !GetAtt
+          - ClientBucket
+          - DomainName
+    Description: Name of S3 bucket to hold website content

@@ -64,7 +64,9 @@
 
             // should be based on how the back-end Lambda function processes requests
             let bodyData = {"queryStringParameters": {"q": transcript}};
-
+            console.log({"q": transcript})
+            resp = sdk.searchGet({"q": transcript},{},{})
+            console.log(resp)
             fetch(apiGatewayUrl, {
                 method: "POST", // or 'GET'
                 headers: {
