@@ -78,10 +78,22 @@
             .then(data => {
                 // do something with the response from the back-end Lambda function
                 console.log(data);
+                // data should contain image urls
+                let imageUrls = JSON.parse(data.body);
+                let searchResultsDiv = document.getElementById("search-results");
+                
+                imageUrls.forEach(url => { 
+                    let imgElement = document.createElement("img");
+                    imgElement.src = url;
+                    searchResultsDiv.appendChild(imgElement);
+                }
+
             })
             .catch((error) => {
                 console.error("Error:", error);
             });
+
+
 
         }
 
