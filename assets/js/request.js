@@ -45,7 +45,9 @@ function callPutPhotoApi(file,filename,labels) {
     .then(function (result) {
       // Handle the successful response
       console.log("API response:", result);
-      return result;
+      var bodyData = JSON.parse(result.body);
+      return bodyData;
+      //return result;
   })
   .catch(function (error) {
       // Handle errors
@@ -61,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchResults = document.getElementById('search-results');
     const uploadedImage = document.getElementById('uploaded-image');
     var base64String = null;
+    var selectedImage = null;
     // Handle image upload form submission
     imageForm.addEventListener('submit', function (event) {
         event.preventDefault();
@@ -69,18 +72,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const labelInput = document.getElementById('label-input');
         const formData = new FormData(imageForm);
         console.log(labelInput.value);
-        const selectedImage = imageInput.files[0];
+        //const selectedImage = imageInput.files[0];
+         selectedImage = imageInput.files[0];
         var reader = new FileReader();
         reader.onload = function() {
             //console.log("reader.result: "+reader.result)
             base64String = btoa(reader.result);
             var filename = selectedImage.name;
-            uploadedImage.src = URL.createObjectURL(selectedImage);
+            console.log(selectedImage)
+           // uploadedImage.src = URL.createObjectURL(selectedImage);
             //console.log("hello: "+base64String)
             callPutPhotoApi(base64String,filename,labelInput.value);
         };
-        resp = callSearchPhotosApi('food');
-        console.log(resp);
+        //console.log(resp);
         reader.readAsBinaryString(selectedImage);
     });
 
@@ -93,5 +97,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // You can implement the search functionality here
         // For now, let's just display the search keyword in the results
         searchResults.innerHTML = `Search results for: ${searchKeyword}`;
+        console.log(searchKeyword)
+        resp = callSearchPhotosApi(searchKeyword);
+        console.log(resp)
     });
 });

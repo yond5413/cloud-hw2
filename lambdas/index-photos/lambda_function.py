@@ -73,9 +73,12 @@ def index(term):
     #print(f"labels: {labels},type: {type(labels)}")
     # Note -> all indexes must be lower case
     for lab in labels:
-        res = client.index(index=lab.lower(), body=term)
-        #client.index(index=INDEX, body=q)
-        #print(res)
+        if contains_special_characters(lab):
+            pass
+        else:
+            res = client.index(index=lab.lower(), body=term)
+            #client.index(index=INDEX, body=q)
+            #print(res)
     return res
 #############################################
 def get_awsauth(region, service):
@@ -143,3 +146,10 @@ def rekognition_labels(bucket_name ,object_name,content = ""):
     for label in detected_labels:
         ret.append(label['Name'])
     return ret
+def contains_special_characters(input_string):
+    special_characters = [',', '"', '*', '\\', '<', '|', ',', '>', '/', '?']
+    for char in input_string:
+        if char in special_characters:
+            return True
+    return False
+ 

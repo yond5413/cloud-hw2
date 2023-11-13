@@ -35,7 +35,6 @@
         <!-- Display search results here -->
         <!-- whatever LF2 outputs-->
     </div>
-    <img id="uploaded-image" src="" alt="Uploaded Image">
 <!---->>
     <script>var sdk = apigClientFactory.newClient({});</script>
    
@@ -52,6 +51,7 @@
 
         // This runs when the speech recognition service has finished
         recognition.onresult = function(event) {
+            
             var transcript = event.results[0][0].transcript;
             output.innerHTML = '<p>Transcript: ' + transcript + '</p>';
               
@@ -59,42 +59,34 @@
             // using transcript as the input
             searchInput.value = transcript;
 
-            //  API Gateway URL
-            let apiGatewayUrl = "https://bw2i7kxmj3.execute-api.us-east-1.amazonaws.com/First-Stage";
-
             // should be based on how the back-end Lambda function processes requests
-            let bodyData = {"queryStringParameters": {"q": transcript}};
+            var params = {"q": transcript}
             console.log({"q": transcript})
-            resp = sdk.searchGet({"q": transcript},{},{})
-            console.log(resp)
-            fetch(apiGatewayUrl, {
-                method: "POST", // or 'GET'
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify(bodyData) // body data type must match "Content-Type" header
-            })
-            .then(response => response.json())
-            .then(data => {
-                // do something with the response from the back-end Lambda function
-                console.log(data);
-                // data should contain image urls
-                let imageUrls = JSON.parse(data.body);
-                let searchResultsDiv = document.getElementById("search-results");
+            sdk.searchGet(params, {}, {})
+        .then(function (resp) {
+            if (resp.status === 200) {
+                // Successful response, handle the data if needed
+                console.log("API response:", resp.data);
                 
-                imageUrls.forEach(url => { 
+                // Assuming resp.data is an array of base64-encoded images, modify this part accordingly
+                let base64Images = resp.data;
+                let searchResultsDiv = document.getElementById("search-results");
+                searchResultsDiv.innerHTML = ""; // Clear previous content
+
+                base64Images.forEach(base64Image => { 
                     let imgElement = document.createElement("img");
-                    imgElement.src = url;
+                    imgElement.src = "data:image/jpeg;base64," + base64Image; // Assuming JPEG format
                     searchResultsDiv.appendChild(imgElement);
-                }
-
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-            });
-
-
-
+                });
+            } else {
+                // Handle other status codes if needed
+                console.error("API error:", resp.status);
+            }
+        })
+        .catch(function (error) {
+            // Handle errors
+            console.error("API error:", error);
+        });
         }
 
         function recordAudio() {

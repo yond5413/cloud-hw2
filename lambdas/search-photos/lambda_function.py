@@ -29,7 +29,7 @@ def lambda_handler(event, context):
 
     print(event)
     
-    q = event["queryStringParameters"]['q']
+    q = event["inputTranscript"]
     print(q)
     #configure test event based off lex output?
     # right now it is basically dummy data
@@ -96,6 +96,27 @@ def lambda_handler(event, context):
         for hit in hits:
             results.append(hit['_source'])
         print(results)
+        s3 = boto3.client('s3')
+        ret = []
+        print(type(results))
+        print(len(results))
+
+        for i in range(0,min(5,len(results))):
+            print(results[i])
+            object_name = results[i]['objectKey']
+            bucket_name = results[i]['Bucket']
+            s3_rep = s3.get_object(Bucket=bucket_name, Key=object_name)
+            base64_data = s3_rep['Body'].read()
+            str_data = base64_data.decode('utf-8')
+            json_data = json.loads(str_data)
+            file_data = json_data['file']
+            print(f'file_data type-> {type(file_data)}')
+            print(file_data[:20])
+            #image_data = file_data.encode('utf-8')
+            #print(f'image datat type->{type(image_data)}')
+            #image_data = base64.b64decode(image_data)
+            image_data = file_data
+            ret.append({"file":image_data})
         #responses = []
         #for l in labels:
         #    if (l!=None) and (l!=''):
@@ -105,7 +126,7 @@ def lambda_handler(event, context):
         
         return{
             'statusCode':200,
-            'body': json.dumps(opensearch_response['hits']['hits'])
+            'body': json.dumps(ret)#opensearch_response['hits']['hits'])
         }
     else:
         return{
