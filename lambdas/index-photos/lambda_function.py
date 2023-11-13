@@ -147,7 +147,7 @@ def rekognition_labels(bucket_name ,object_name,content = ""):
         ret.append(label['Name'])
     return ret
 def contains_special_characters(input_string):
-    special_characters = [',', '"', '*', '\\', '<', '|', ',', '>', '/', '?']
+    special_characters = [',', '"', '*', '\\', '<', '|', ',', '>', '/', '?'," "]
     for char in input_string:
         if char in special_characters:
             return True
