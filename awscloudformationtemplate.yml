@@ -10,12 +10,34 @@ Resources:
 ##### idk yet
 ###### put bucket
   AssetsBucket:
-      Type: AWS::S3::Bucket
-      ## create
+    Type: AWS::S3::Bucket
+    DependsOn:
+      - IndexPhotoTemplateLambdaPermission
+    Properties:
+      #AccessControl: PublicRead
+      AccessControl: PublicRead
+      OwnershipControls:
+        Rules:
+        - ObjectOwnership: BucketOwnerPreferred
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt Lambda1Indexphotos.Arn
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [PUT, HEAD, GET]
+            AllowedOrigins: ['*']
   ####frontend bucket
   ClientBucket:
     Type: AWS::S3::Bucket
     Properties:
+      AccessControl: PublicRead
       OwnershipControls:
         Rules:
         - ObjectOwnership: BucketOwnerPreferred
@@ -116,7 +138,7 @@ Resources:
   Lambda1Indexphotos:
     Type: 'AWS::Lambda::Function'
     Properties:
-      Handler: index.handler
+      Handler: lambda_function.lambda_handler 
       Role: !GetAtt Lambda1IndexTemplateRole.Arn
       FunctionName: index_photos_template
       Runtime: python3.11
@@ -177,13 +199,11 @@ Resources:
               - Effect: Allow
                 Action: lex:*
                 Resource: '*'
-  #### resource based policy
-  ######:(
   ############################################################################################
   Lambda2Searchphotos:
     Type: 'AWS::Lambda::Function'
     Properties:
-      Handler: index.handler
+      Handler: lambda_function.lambda_handler
       Role: !GetAtt Lambda2SearchTemplateRole.Arn
       FunctionName: search_photos_template
       Runtime: python3.11
@@ -232,8 +252,34 @@ Resources:
       BodyS3Location:
         Bucket: my-assign2-codebucket
         Key: AI Photo Search-First-Stage-swagger-apigateway.yaml
+  #################### s3 bucket trigge #####################
+  IndexPhotoTemplateLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref Lambda1Indexphotos
+      Principal: s3.amazonaws.com
+      SourceArn: 'arn:aws:s3:::t1-assetsbucket-ficre8wqppj0'
+      SourceAccount: !Ref AWS::AccountId
   ############################################################################################
-  Outputs:
+  SearchLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref Lambda2Searchphotos
+      Principal: apigateway.amazonaws.com	
+      SourceArn: !Sub arn:aws:execute-api:us-east-1:239946977323:${PhotoApi}/*/GET/search
+      SourceAccount: !Ref AWS::AccountId
+  SearchLambdaLexPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref Lambda2Searchphotos
+      Principal: lexv2.amazonaws.com
+      SourceArn: 'arn:aws:lex:us-east-1:239946977323:bot-alias/MCTHXSG0MW/TSTALIASID'
+      SourceAccount: !Ref AWS::AccountId
+  ####################################################################
+Outputs:
   WebsiteURL:
     Value: !GetAtt
       - ClientBucket
@@ -247,3 +293,5 @@ Resources:
           - ClientBucket
           - DomainName
     Description: Name of S3 bucket to hold website content
+
+ 
