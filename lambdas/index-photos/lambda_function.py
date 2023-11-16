@@ -8,6 +8,7 @@ import base64
 REGION = 'us-east-1'
 HOST = 'search-photos-escniwfsrfppledgjhg4fvk37e.aos.us-east-1.on.aws'
 INDEX = 'photos'
+print("demo")
 def lambda_handler(event, context):
     ## specified format of 'JSON for Opensearch'
     '''
